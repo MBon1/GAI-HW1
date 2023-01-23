@@ -244,6 +244,8 @@ public class Movement_3 : MonoBehaviour
             steering.linear *= maxAcceleration;
         }
 
+        // Display a dot at target position
+
         // Output the steering
         return steering;
     }
@@ -435,7 +437,8 @@ public class Movement_3 : MonoBehaviour
     {
         // 1. Calculate the target to delegate to face
         //    Update the wander orientation
-        wanderOrientation += RandomBinomial() * wanderRate;
+        float randomBinomial = RandomBinomial();
+        wanderOrientation += (randomBinomial * wanderRate);
 
         //    Calculate the combined target orientation
         float targetOrientation = wanderOrientation + character.orientation;
@@ -502,9 +505,9 @@ public class Movement_3 : MonoBehaviour
         return Random.Range(0.0f, 1.0f) - Random.Range(0.0f, 1.0f);
     }
 
-    Vector3 scalarAsVector(float w)
+    public static Vector3 scalarAsVector(float w)
     {
-        return new Vector3(Mathf.Sin(w), Mathf.Cos(w));
+        return new Vector3(Mathf.Sin(w) * Mathf.Rad2Deg, Mathf.Cos(w) * Mathf.Rad2Deg);
     }
     
     Kinematic Rb2DToKinematic(Rigidbody2D rb)

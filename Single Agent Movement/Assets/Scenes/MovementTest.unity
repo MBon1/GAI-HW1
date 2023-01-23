@@ -408,8 +408,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movement: 0
   targetGO: {fileID: 0}
-  maxSpeed: 2
-  maxAcceleration: 1.25
+  maxSpeed: 1.5
+  maxAcceleration: 0.9375
   maxAngularAcceleration: 2
   maxRotation: 1.25
   targetRadius: 1
@@ -460,7 +460,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07cbc63fcc02855428e6a77e6c4bdbf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 375
+  speed: 45
   rotationSpeed: 100
   currentSpeed: 0
 --- !u!4 &767735117
@@ -542,7 +542,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78003c05bb6cd6149bd780a9757e7b9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movement: 11
+  movement: 6
   targetGO: {fileID: 767735110}
   maxSpeed: 5
   maxAcceleration: 3.125
@@ -555,7 +555,7 @@ MonoBehaviour:
   maxPrediction: 5
   wanderOffset: 0.1
   wanderRadius: 0.1
-  wanderRate: 0.1
+  wanderRate: 1
   wanderOrientation: 0
   path:
     path:
