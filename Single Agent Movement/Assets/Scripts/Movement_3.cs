@@ -6,7 +6,7 @@ using UnityEngine;
 public class Movement_3 : MonoBehaviour
 {
     // How the agent should move
-    [SerializeField] MovementOperation movement = MovementOperation.None;
+    public MovementOperation movement = MovementOperation.None;
     MovementOperation prevMovement;
 
     // Target
@@ -703,7 +703,7 @@ public class Movement_3 : MonoBehaviour
         }
     }
 
-    private enum MovementOperation
+    public enum MovementOperation
     {
         None,
         Seek,
