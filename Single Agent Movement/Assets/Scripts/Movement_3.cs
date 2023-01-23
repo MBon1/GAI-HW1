@@ -7,6 +7,7 @@ public class Movement_3 : MonoBehaviour
 {
     // How the agent should move
     [SerializeField] MovementOperation movement = MovementOperation.None;
+    MovementOperation prevMovement;
 
     // Target
     [SerializeField] GameObject targetGO = null;
@@ -58,6 +59,14 @@ public class Movement_3 : MonoBehaviour
     [SerializeField] float timeToTarget = 0.1f;
     [SerializeField] float alignmentTimeToTarget = 0.1f;
 
+    [Header("Visualization")]
+    [SerializeField] GameObject targetPointPrefab;
+    [SerializeField] GameObject targetPoint;
+    /*[SerializeField] GameObject wanderCirclePrefab;
+    [SerializeField] GameObject wanderCircle;*/
+
+    [SerializeField] bool forwardPathTraversal = true;
+
     private void Awake()
     {
         characterRb = this.GetComponent<Rigidbody2D>();
@@ -70,11 +79,17 @@ public class Movement_3 : MonoBehaviour
         {
             targetRb = targetGO.GetComponent<Rigidbody2D>();
         }
+        prevMovement = movement;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (prevMovement != movement && targetPoint != null)
+        {
+            Destroy(targetPoint);
+        }
+
         if (targetGO == null || movement == MovementOperation.None)
         {
             return;
@@ -110,6 +125,10 @@ public class Movement_3 : MonoBehaviour
         {
             steering = GetPursueSteering();
         }
+        else if (movement == MovementOperation.Evade)
+        {
+            steering = GetEvadeSteering();
+        }
         else if (movement == MovementOperation.Face)
         {
             steering = GetFaceSteering();
@@ -125,7 +144,8 @@ public class Movement_3 : MonoBehaviour
         }
         else if (movement == MovementOperation.FollowPath)
         {
-            steering = GetPathSteering();
+            //steering = GetPathSteering();
+            steering = FollowPath();
         }
         else
         {
@@ -146,7 +166,6 @@ public class Movement_3 : MonoBehaviour
 
         // Write back to character RB at end of Update
         KinematicToRb2(ref characterRb, character);
-
     }
 
     // Seek
@@ -167,6 +186,8 @@ public class Movement_3 : MonoBehaviour
         // Give full acceleration along this direction
         steering.linear.Normalize();
         steering.linear *= maxAcceleration;
+
+        DrawTargetPoint(target.position);
 
         // Output the steering
         steering.angular = 0;
@@ -244,7 +265,7 @@ public class Movement_3 : MonoBehaviour
             steering.linear *= maxAcceleration;
         }
 
-        // Display a dot at target position
+        DrawTargetPoint(target.position);
 
         // Output the steering
         return steering;
@@ -415,8 +436,7 @@ public class Movement_3 : MonoBehaviour
         return GetAlignSteering(alignTarget);
     }
 
-    // Wander
-
+    // Look in direction of movement
     SteeringOutput LookWhereYoureGoing()
     {
         // 1. Calculate the target to delegate to align
@@ -433,6 +453,7 @@ public class Movement_3 : MonoBehaviour
         return GetAlignSteering();
     }
 
+    // Wander
     SteeringOutput GetWanderSteering()
     {
         // 1. Calculate the target to delegate to face
@@ -454,6 +475,8 @@ public class Movement_3 : MonoBehaviour
 
         // 3. Now set the linear acceleration to be at full acceleration in the direction of the orientation
         steering.linear = maxAcceleration * scalarAsVector(character.orientation);
+
+        DrawTargetPoint(target.position);
 
         // Return it
         return steering;
@@ -483,7 +506,7 @@ public class Movement_3 : MonoBehaviour
 
     SteeringOutput GetPathSteering()
     {
-        // 1. Calculate the taret to delegate to face
+        // 1. Calculate the tagret to delegate to face
         //    Find the predicted future location
         Vector3 futurePos = character.position + character.velocity * predictTime;
 
@@ -493,8 +516,68 @@ public class Movement_3 : MonoBehaviour
         //    Offset it
         target.position = path.GetPosition(currentParam);
 
+        DrawTargetPoint(target.position);
+
         // 2. Delegate to Seek
         return GetSeekSteering();
+    }
+
+    SteeringOutput FollowPath()
+    {
+        if (currentParam >= path.path.Length)
+        {
+            currentParam = path.path.Length - 2;
+            forwardPathTraversal = !forwardPathTraversal;
+        }
+
+        if (currentParam < 0)
+        {
+            currentParam = 0;
+            forwardPathTraversal = !forwardPathTraversal;
+        }
+
+        if (forwardPathTraversal)
+        {
+            float distance = -1;
+            for (int i = currentParam; i < path.path.Length; i++)
+            {
+                float dist = Vector3.Distance(character.position, path.path[i].position);
+                if (distance < 0 || dist < distance)
+                {
+                    distance = dist;
+                    currentParam = i;
+                }
+            }
+        }
+        else
+        {
+            float distance = -1;
+            for (int i = currentParam; i >= 0; i--)
+            {
+                float dist = Vector3.Distance(character.position, path.path[i].position);
+                if (distance < 0 || dist < distance)
+                {
+                    distance = dist;
+                    currentParam = i;
+                }
+            }
+        }
+
+        target.position = path.path[currentParam].position;
+        
+        if (Vector3.Distance(character.position, target.position) <= 1)
+        {
+            if (forwardPathTraversal)
+            {
+                currentParam++;
+            }
+            else
+            {
+                currentParam--;
+            }
+        }
+
+        return GetArriveSteering();
     }
 
 
@@ -508,6 +591,20 @@ public class Movement_3 : MonoBehaviour
     public static Vector3 scalarAsVector(float w)
     {
         return new Vector3(Mathf.Sin(w) * Mathf.Rad2Deg, Mathf.Cos(w) * Mathf.Rad2Deg);
+    }
+
+    void DrawTargetPoint(Vector3 position)
+    {
+        // Draw Target Point
+        if (targetPointPrefab != null)
+        {
+            if (targetPoint == null)
+            {
+                // Display a dot at target position
+                targetPoint = Instantiate(targetPointPrefab);
+            }
+            targetPoint.transform.position = position;
+        }
     }
     
     Kinematic Rb2DToKinematic(Rigidbody2D rb)
@@ -579,6 +676,7 @@ public class Movement_3 : MonoBehaviour
                     float distance = (position - path[i].position).magnitude;
                     if (nextDistance < 0.0f || distance < nextDistance)
                     {
+                        nextDistance = distance;
                         nextPosition = i;
                     }
                 }
@@ -590,6 +688,7 @@ public class Movement_3 : MonoBehaviour
                     float distance = (position - path[i].position).magnitude;
                     if (nextDistance < 0.0f || distance < nextDistance)
                     {
+                        nextDistance = distance;
                         nextPosition = i;
                     }
                 }

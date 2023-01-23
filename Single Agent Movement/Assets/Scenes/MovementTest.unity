@@ -427,6 +427,9 @@ MonoBehaviour:
   predictTime: 0.1
   timeToTarget: 0.1
   alignmentTimeToTarget: 0.1
+  targetPointPrefab: {fileID: 0}
+  targetPoint: {fileID: 0}
+  forwardPathTraversal: 1
 --- !u!50 &767735112
 Rigidbody2D:
   serializedVersion: 4
@@ -460,7 +463,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07cbc63fcc02855428e6a77e6c4bdbf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 45
+  speed: 10
   rotationSpeed: 100
   currentSpeed: 0
 --- !u!4 &767735117
@@ -542,14 +545,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78003c05bb6cd6149bd780a9757e7b9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movement: 6
+  movement: 11
   targetGO: {fileID: 767735110}
   maxSpeed: 5
   maxAcceleration: 3.125
   maxAngularAcceleration: 90
   maxRotation: 56.25
   targetRadius: 1
-  slowRadius: 45
+  slowRadius: 4
   targetAlignRadius: 1.5
   alignSlowRadius: 1
   maxPrediction: 5
@@ -566,6 +569,9 @@ MonoBehaviour:
   predictTime: 0.1
   timeToTarget: 0.1
   alignmentTimeToTarget: 0.1
+  targetPointPrefab: {fileID: 4730570070989178569, guid: 28735ad5affdbb5499bdd83d52ff57c7, type: 3}
+  targetPoint: {fileID: 0}
+  forwardPathTraversal: 1
 --- !u!50 &1477111997
 Rigidbody2D:
   serializedVersion: 4
@@ -624,11 +630,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5341417278550150453, guid: addadd2118fc9994ab2875f8cafd8ccc, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.63
+      value: -1.69
       objectReference: {fileID: 0}
     - target: {fileID: 5341417278550150453, guid: addadd2118fc9994ab2875f8cafd8ccc, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.3
+      value: -2.67
       objectReference: {fileID: 0}
     - target: {fileID: 5341417278550150453, guid: addadd2118fc9994ab2875f8cafd8ccc, type: 3}
       propertyPath: m_LocalPosition.z
@@ -690,11 +696,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5341417278550150453, guid: addadd2118fc9994ab2875f8cafd8ccc, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.74
+      value: 1.87
       objectReference: {fileID: 0}
     - target: {fileID: 5341417278550150453, guid: addadd2118fc9994ab2875f8cafd8ccc, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.66
+      value: 1.31
       objectReference: {fileID: 0}
     - target: {fileID: 5341417278550150453, guid: addadd2118fc9994ab2875f8cafd8ccc, type: 3}
       propertyPath: m_LocalPosition.z
