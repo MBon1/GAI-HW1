@@ -82,8 +82,7 @@ public class Movement_3 : MonoBehaviour
         prevMovement = movement;
     }
 
-    // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if (prevMovement != movement && targetPoint != null)
         {
@@ -162,7 +161,7 @@ public class Movement_3 : MonoBehaviour
         }
 
         // Perform kinematic update
-        character.Update(steering, maxSpeed, Time.deltaTime);
+        character.Update(steering, maxSpeed, Time.fixedDeltaTime);
 
         // Write back to character RB at end of Update
         KinematicToRb2(ref characterRb, character);
