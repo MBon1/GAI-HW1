@@ -92,6 +92,9 @@ public class Movement_3 : MonoBehaviour
         {
             prevMovement = movement;
 
+            currentParam = 0;
+            forwardPathTraversal = true;
+
             Destroy(targetPoint);
             DestroyArriveRadius();
             ShowPath(false);

@@ -160,7 +160,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 220, y: -20}
+  m_AnchoredPosition: {x: 145, y: -150}
   m_SizeDelta: {x: 200, y: 45}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &424271735
@@ -286,7 +286,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &747085119
 RectTransform:
   m_ObjectHideFlags: 0
@@ -303,7 +303,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 587.5, y: -30}
+  m_AnchoredPosition: {x: 620, y: -30}
   m_SizeDelta: {x: 350, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &747085120
@@ -339,8 +339,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "Setting NPC Algorithm: \n      None (0)\n      Pursue (1)\n      Evade
-    (2)\n      Wander (3)\n      Follow Path (4)"
+  m_Text: "Setting NPC Algorithm: \n      None (0)\n      Seek (1)\n      Flee (2)\n     
+    Pursue (3)\n      Evade (4)\n      Wander (5)\n      Follow Path (6)"
 --- !u!222 &747085121
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -611,8 +611,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 220, y: -30}
-  m_SizeDelta: {x: 350, y: 30}
+  m_AnchoredPosition: {x: 230, y: -30}
+  m_SizeDelta: {x: 367.5, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1685441133
 MonoBehaviour:
@@ -648,10 +648,9 @@ MonoBehaviour:
     m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: "Controls: \n   Move Player Character\n      Forwards (W / Up-Arrow)\n     
-    Backwards (S / Down-Arrow)\n\n   Rotate Player Character\n      Rotate Left (A
-    / Left-Arrow)\n      Rotate Left (D / Right-Arrow)\n\n   Set NPC Movement Algorithm:
-    \n      Pursue (1)\n      Evade (2)\n      Wander (3)\n      Follow Path (4)\n\n  
-    Return to Title Scene (Esc)"
+    Backwards (S / Down-Arrow)\n\n   Rotate Player Character\n      Counterclockwise
+    (A / Left-Arrow)\n      Clockwise (D / Right-Arrow)\n\n   Return to Title Scene
+    (Esc)"
 --- !u!222 &1685441134
 CanvasRenderer:
   m_ObjectHideFlags: 0

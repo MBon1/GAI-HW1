@@ -22,17 +22,25 @@ public class BehaviorController : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            movement.movement = Movement_3.MovementOperation.Pursue;
+            movement.movement = Movement_3.MovementOperation.Seek;
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            movement.movement = Movement_3.MovementOperation.Evade;
+            movement.movement = Movement_3.MovementOperation.Flee;
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            movement.movement = Movement_3.MovementOperation.Wander;
+            movement.movement = Movement_3.MovementOperation.Pursue;
         }
         else if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            movement.movement = Movement_3.MovementOperation.Evade;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            movement.movement = Movement_3.MovementOperation.Wander;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha6))
         {
             movement.movement = Movement_3.MovementOperation.FollowPath;
         }
