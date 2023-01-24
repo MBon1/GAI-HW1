@@ -156,7 +156,7 @@ RectTransform:
   m_Children:
   - {fileID: 1582423266}
   m_Father: {fileID: 2021350322}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -269,6 +269,86 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36f60dafba8a35a4d8a29f417ba0d36c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &747085118
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 747085119}
+  - component: {fileID: 747085121}
+  - component: {fileID: 747085120}
+  m_Layer: 5
+  m_Name: Text (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &747085119
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 747085118}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2021350322}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 587.5, y: -30}
+  m_SizeDelta: {x: 350, y: 30}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &747085120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 747085118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 22
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 0
+    m_MaxSize: 202
+    m_Alignment: 0
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 1
+    m_LineSpacing: 1
+  m_Text: "Setting NPC Algorithm: \n      None (0)\n      Pursue (1)\n      Evade
+    (2)\n      Wander (3)\n      Follow Path (4)"
+--- !u!222 &747085121
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 747085118}
+  m_CullTransparentMesh: 1
 --- !u!1 &923555700
 GameObject:
   m_ObjectHideFlags: 0
@@ -527,12 +607,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2021350322}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 359, y: -59}
-  m_SizeDelta: {x: 600.7, y: 30}
+  m_AnchoredPosition: {x: 220, y: -30}
+  m_SizeDelta: {x: 350, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1685441133
 MonoBehaviour:
@@ -567,11 +647,11 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "Controls: \n   Move Player-Controlled Character\n      Forwards (W / Up-Arrow)\n     
-    Backwards (S / Down-Arrow)\n\n   Rotate Player-Controlled Character\n      Rotate
-    Left (A / Left-Arrow)\n      Rotate Left (D / Right-Arrow)\n\n   Change NPC Character
-    Behavior: \n      Pursue (1)\n      Evade (2)\n      Wander (3)\n      Follow
-    Path (4)\n\n   Return to Title Scene (Esc)"
+  m_Text: "Controls: \n   Move Player Character\n      Forwards (W / Up-Arrow)\n     
+    Backwards (S / Down-Arrow)\n\n   Rotate Player Character\n      Rotate Left (A
+    / Left-Arrow)\n      Rotate Left (D / Right-Arrow)\n\n   Set NPC Movement Algorithm:
+    \n      Pursue (1)\n      Evade (2)\n      Wander (3)\n      Follow Path (4)\n\n  
+    Return to Title Scene (Esc)"
 --- !u!222 &1685441134
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -671,8 +751,9 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
-  - {fileID: 1685441132}
   - {fileID: 424271734}
+  - {fileID: 1685441132}
+  - {fileID: 747085119}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class Movement_3 : MonoBehaviour
@@ -54,6 +55,8 @@ public class Movement_3 : MonoBehaviour
     [SerializeField] int currentParam;
     // Holds the time in the future to predict the character's position
     [SerializeField] float predictTime = 0.1f;
+    // Which direction character is following the path
+    [SerializeField] bool forwardPathTraversal = true;
 
     // Holds the time over which to achieve target speed
     [SerializeField] float timeToTarget = 0.1f;
@@ -62,10 +65,11 @@ public class Movement_3 : MonoBehaviour
     [Header("Visualization")]
     [SerializeField] GameObject targetPointPrefab;
     [SerializeField] GameObject targetPoint;
-    /*[SerializeField] GameObject wanderCirclePrefab;
-    [SerializeField] GameObject wanderCircle;*/
+    [SerializeField] GameObject arriveRadiusPrefab;
+    [SerializeField] GameObject arriveRadius;
+    [SerializeField] GameObject pathNodes;
+    [SerializeField] Text behaviorText;
 
-    [SerializeField] bool forwardPathTraversal = true;
 
     private void Awake()
     {
@@ -86,11 +90,16 @@ public class Movement_3 : MonoBehaviour
     {
         if (prevMovement != movement && targetPoint != null)
         {
+            prevMovement = movement;
+
             Destroy(targetPoint);
+            DestroyArriveRadius();
+            ShowPath(false);
         }
 
         if (targetGO == null || movement == MovementOperation.None)
         {
+            WriteBehavior("None");
             return;
         }
 
@@ -103,48 +112,60 @@ public class Movement_3 : MonoBehaviour
         if (movement == MovementOperation.Seek)
         {
             steering = GetSeekSteering();
+            WriteBehavior("SEEK");
         }
         else if (movement == MovementOperation.Flee)
         {
             steering = GetFleeSteering();
+            WriteBehavior("FLEE");
         }
         else if (movement == MovementOperation.Arrive)
         {
             steering = GetArriveSteering();
+            WriteBehavior("ARRIVE");
         }
         else if (movement == MovementOperation.Align)
         {
             steering = GetAlignSteering();
+            WriteBehavior("ALIGN");
         }
         else if (movement == MovementOperation.VelocityMatching)
         {
             steering = GetVelocityMatchingSteering(target);
+            WriteBehavior("VELOCITY MATCHING");
         }
         else if (movement == MovementOperation.Pursue)
         {
             steering = GetPursueSteering();
+            WriteBehavior("DYNAMIC PURSUE (with dynamic arrive)");
         }
         else if (movement == MovementOperation.Evade)
         {
             steering = GetEvadeSteering();
+            WriteBehavior("DYNAMIC EVADE");
         }
         else if (movement == MovementOperation.Face)
         {
             steering = GetFaceSteering();
+            WriteBehavior("FACE");
         }
         else if (movement == MovementOperation.LookWhereYoureGoing)
         {
             steering = LookWhereYoureGoing();
+            WriteBehavior("LOOK FORWARD");
         }
         else if (movement == MovementOperation.Wander)
         {
-            //steering = Wander();
-            steering = GetWanderSteering();
+            steering = Wander();
+            //steering = GetWanderSteering();
+            WriteBehavior("WANDER");
         }
         else if (movement == MovementOperation.FollowPath)
         {
+            ShowPath(true);
             //steering = GetPathSteering();
             steering = FollowPath();
+            WriteBehavior("PATH FOLLOWING");
         }
         else
         {
@@ -153,8 +174,8 @@ public class Movement_3 : MonoBehaviour
 
         if (movement != MovementOperation.Align && 
             movement != MovementOperation.Face &&
-            movement != MovementOperation.LookWhereYoureGoing &&
-            movement != MovementOperation.Wander)
+            movement != MovementOperation.LookWhereYoureGoing/* &&
+            movement != MovementOperation.Wander*/)
         {
             // Get character to always face where it's going
             steering.angular = LookWhereYoureGoing().angular;
@@ -211,6 +232,8 @@ public class Movement_3 : MonoBehaviour
         steering.linear.Normalize();
         steering.linear *= maxAcceleration;
 
+        DrawTargetPoint(target.position);
+
         // Output the steering
         steering.angular = 0;
         return steering;
@@ -233,6 +256,7 @@ public class Movement_3 : MonoBehaviour
         // Check if we are there, return no steering
         if (distance < targetRadius)
         {
+            DrawArriveRadius(target.position, slowRadius);
             return steering;
         }
 
@@ -241,10 +265,12 @@ public class Movement_3 : MonoBehaviour
         float targetSpeed = 0.0f;
         if (distance > slowRadius)
         {
+            DestroyArriveRadius();
             targetSpeed = maxSpeed;
         }
         else
         {
+            DrawArriveRadius(target.position, slowRadius);
             targetSpeed = maxSpeed * distance / slowRadius;
         }
 
@@ -410,6 +436,8 @@ public class Movement_3 : MonoBehaviour
         Kinematic seekTarget = target;
         seekTarget.position += target.velocity * prediction;
 
+        //DrawTargetPoint(seekTarget.position);
+
         // 2. Delegate to seek
         return GetFleeSteering(seekTarget);
     }
@@ -476,13 +504,14 @@ public class Movement_3 : MonoBehaviour
         steering.linear = maxAcceleration * scalarAsVector(character.orientation);
 
         DrawTargetPoint(target.position);
+        DrawArriveRadius(character.position, wanderRadius);
 
         // Return it
         return steering;
     }
 
-    float wanderRad = 1;
-    float wanderDistance = 1;
+    float wanderRad = 5;
+    float wanderDistance = 5;
     float wanderJitter = 1;
     Vector3 wanderTarget = Vector3.zero;
     SteeringOutput Wander()
@@ -499,6 +528,8 @@ public class Movement_3 : MonoBehaviour
 
         Kinematic wanderKinematicTarget = target;
         wanderKinematicTarget.position = targetWorld;
+
+        DrawArriveRadius(character.position, wanderRad);
 
         return GetSeekSteering(wanderKinematicTarget);
     }
@@ -563,8 +594,8 @@ public class Movement_3 : MonoBehaviour
         }
 
         target.position = path.path[currentParam].position;
-        
-        if (Vector3.Distance(character.position, target.position) <= 1)
+
+        if (Vector3.Distance(character.position, target.position) <= 5)
         {
             if (forwardPathTraversal)
             {
@@ -576,7 +607,12 @@ public class Movement_3 : MonoBehaviour
             }
         }
 
-        return GetArriveSteering();
+        if (currentParam == 0 || currentParam == path.path.Length - 1)
+        {
+            return GetArriveSteering();
+        }
+        DestroyArriveRadius();
+        return GetSeekSteering();
     }
 
 
@@ -604,6 +640,38 @@ public class Movement_3 : MonoBehaviour
             }
             targetPoint.transform.position = position;
         }
+    }
+
+    void DrawArriveRadius(Vector3 position, float radius)
+    {
+        if (arriveRadius == null && arriveRadiusPrefab != null)
+        {
+            arriveRadius = Instantiate(arriveRadiusPrefab);
+        }
+
+        arriveRadius.transform.localScale = new Vector3(radius, radius, 1);
+        arriveRadius.transform.position = position;
+    }
+
+    void DestroyArriveRadius()
+    {
+        if (arriveRadius != null)
+        {
+            Destroy(arriveRadius);
+        }
+    }
+
+    void ShowPath(bool show)
+    {
+        if (pathNodes == null)
+            return;
+        pathNodes.SetActive(show);
+    }
+
+    void WriteBehavior(string behavior)
+    {
+        if (behaviorText != null)
+            behaviorText.text = behavior;
     }
     
     Kinematic Rb2DToKinematic(Rigidbody2D rb)
