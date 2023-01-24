@@ -38,13 +38,19 @@ public class Movement_3 : MonoBehaviour
     // Holds the maximum prediction time (for pursue)
     [SerializeField] float maxPrediction = 5;
 
-    // Holds the radius and forward offset of the wander circle (for wander)
+    // Holds the radius and forward offset of the wander circle (for wander old)
     [SerializeField] float wanderOffset = 3;
     [SerializeField] float wanderRadius = 3;
     // Holds the maximum rate at which the wander orientation can change
     [SerializeField] float wanderRate = 10;
     // Holds the current orientation of the wander target
     [SerializeField] float wanderOrientation = 0;
+
+    // Wand radius, distance, jitter, and target position (for wander new)
+    float wanderRad = 5;
+    float wanderDistance = 5;
+    float wanderJitter = 1;
+    Vector3 wanderTarget = Vector3.zero;
 
     // Holds the path to follow
     [SerializeField] Path path;
@@ -55,6 +61,8 @@ public class Movement_3 : MonoBehaviour
     [SerializeField] int currentParam;
     // Holds the time in the future to predict the character's position
     [SerializeField] float predictTime = 0.1f;
+    // Arrival distance between path node and character
+    float pathArrivalRadius = 5;
     // Which direction character is following the path
     [SerializeField] bool forwardPathTraversal = true;
 
@@ -177,8 +185,7 @@ public class Movement_3 : MonoBehaviour
 
         if (movement != MovementOperation.Align && 
             movement != MovementOperation.Face &&
-            movement != MovementOperation.LookWhereYoureGoing/* &&
-            movement != MovementOperation.Wander*/)
+            movement != MovementOperation.LookWhereYoureGoing)
         {
             // Get character to always face where it's going
             steering.angular = LookWhereYoureGoing().angular;
@@ -352,6 +359,7 @@ public class Movement_3 : MonoBehaviour
         return steering;
     }
 
+    // Map given angle angle (in radians) to a range of (-pi,pi)
     private float MapToRange(float rotation)
     {
         float rad = rotation * Mathf.Deg2Rad;
@@ -483,7 +491,7 @@ public class Movement_3 : MonoBehaviour
         return GetAlignSteering();
     }
 
-    // Wander
+    // Wander (old implementation)
     SteeringOutput GetWanderSteering()
     {
         // 1. Calculate the target to delegate to face
@@ -513,12 +521,10 @@ public class Movement_3 : MonoBehaviour
         return steering;
     }
 
-    float wanderRad = 5;
-    float wanderDistance = 5;
-    float wanderJitter = 1;
-    Vector3 wanderTarget = Vector3.zero;
+    // Wander (current implementation)
     SteeringOutput Wander()
     {
+        // Set wander target position
         wanderTarget += new Vector3(Random.Range(-1.0f, 1.0f) * wanderJitter,
                                     0,
                                     Random.Range(-1.0f, 1.0f) * wanderJitter);
@@ -534,9 +540,11 @@ public class Movement_3 : MonoBehaviour
 
         DrawArriveRadius(character.position, wanderRad);
 
+        // Seek wander target
         return GetSeekSteering(wanderKinematicTarget);
     }
 
+    // Path Following (old implementation)
     SteeringOutput GetPathSteering()
     {
         // 1. Calculate the tagret to delegate to face
@@ -555,20 +563,28 @@ public class Movement_3 : MonoBehaviour
         return GetSeekSteering();
     }
 
+    // Path Following (current implementation)
     SteeringOutput FollowPath()
     {
+        // Check if the current node index is greater than the
+        // the number of nodes in the path
+        // Set index to path len - 1 and set it to traverse path in descending order
         if (currentParam >= path.path.Length)
         {
             currentParam = path.path.Length - 2;
             forwardPathTraversal = !forwardPathTraversal;
         }
 
+        // Check if the current node index is negative
+        // Reset index to 0 and set it to traverse path in ascending order
         if (currentParam < 0)
         {
             currentParam = 0;
             forwardPathTraversal = !forwardPathTraversal;
         }
 
+        // Check if character is closer to another node further along in the path
+        // If so, set the current node to that one
         if (forwardPathTraversal)
         {
             float distance = -1;
@@ -598,7 +614,10 @@ public class Movement_3 : MonoBehaviour
 
         target.position = path.path[currentParam].position;
 
-        if (Vector3.Distance(character.position, target.position) <= 5)
+        // If the distance between the character and target is less than
+        // the path arrival radius
+        // If so, set next node in path
+        if (Vector3.Distance(character.position, target.position) < pathArrivalRadius)
         {
             if (forwardPathTraversal)
             {
@@ -609,7 +628,7 @@ public class Movement_3 : MonoBehaviour
                 currentParam--;
             }
         }
-
+        // Arrive or seek to next node
         if (currentParam == 0 || currentParam == path.path.Length - 1)
         {
             return GetArriveSteering();
@@ -618,19 +637,19 @@ public class Movement_3 : MonoBehaviour
         return GetSeekSteering();
     }
 
-
-
-
+    // Generate a random binomial
     float RandomBinomial()
     {
         return Random.Range(0.0f, 1.0f) - Random.Range(0.0f, 1.0f);
     }
 
+    // Transform a scalar to a vector (used for orientaiton)
     public static Vector3 scalarAsVector(float w)
     {
         return new Vector3(Mathf.Sin(w) * Mathf.Rad2Deg, Mathf.Cos(w) * Mathf.Rad2Deg);
     }
 
+    // Draw the target point that the character will move to/from
     void DrawTargetPoint(Vector3 position)
     {
         // Draw Target Point
@@ -645,6 +664,7 @@ public class Movement_3 : MonoBehaviour
         }
     }
 
+    // Visualize the arrive radius around a given point
     void DrawArriveRadius(Vector3 position, float radius)
     {
         if (arriveRadius == null && arriveRadiusPrefab != null)
@@ -656,6 +676,7 @@ public class Movement_3 : MonoBehaviour
         arriveRadius.transform.position = position;
     }
 
+    // Destroy the arrive radius visualization if it exists
     void DestroyArriveRadius()
     {
         if (arriveRadius != null)
@@ -664,6 +685,7 @@ public class Movement_3 : MonoBehaviour
         }
     }
 
+    // Display path for character to follow
     void ShowPath(bool show)
     {
         if (pathNodes == null)
@@ -671,12 +693,14 @@ public class Movement_3 : MonoBehaviour
         pathNodes.SetActive(show);
     }
 
+    // Display the name of the given behavior
     void WriteBehavior(string behavior)
     {
         if (behaviorText != null)
             behaviorText.text = behavior;
     }
     
+    // Convert a Rigidbody2D to a Kinematic
     Kinematic Rb2DToKinematic(Rigidbody2D rb)
     {
         Kinematic kinematic = new Kinematic();
@@ -687,6 +711,7 @@ public class Movement_3 : MonoBehaviour
         return kinematic;
     }
 
+    // Convert a Kinematic to a Rigidbody2D
     void KinematicToRb2(ref Rigidbody2D rb, Kinematic kinematic)
     {
         rb.position = kinematic.position;
@@ -694,6 +719,7 @@ public class Movement_3 : MonoBehaviour
         rb.velocity = kinematic.velocity;
         rb.angularVelocity = kinematic.rotation;
     }
+
 
     public struct Kinematic
     {
